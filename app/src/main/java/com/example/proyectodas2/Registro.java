@@ -252,39 +252,16 @@ public class Registro extends AppCompatActivity {
         return false;
     }
     public void anadirUsuario(String nombre, String apellido,String usuario, String contra,String dir, String tele,String email, String club){
-        /*String[] keys =  new String[9];
-        Object[] params = new String[9];
-        keys[0] = "param";
-        keys[1] = "Nombre";
-        keys[2] = "Apellido";
-        keys[3] = "Usuario";
-        keys[4] = "Contraseña";
-        keys[5] = "Direccion";
-        keys[6] = "NTelefono";
-        keys[7] = "Email";
-        keys[8] = "Club";
-
-        params[0] = "Registrar";
-        params[1] = nombre;
-        params[2] = apellido;
-        params[3] = usuario;
-        params[4] = contra;
-        params[5] = dir;
-        params[6] = tele;
-        params[7] = email;
-        params[8] = club;
-
-        Data param = BD.createParam(keys, params);*/
         Data param =new Data .Builder ()
                 .putString ("param","Registrar")
-                .putString ("Nombre", nombre)
-                .putString ("Apellido",apellido)
-                .putString ("Usuario", usuario)
-                .putString ("pass",contra)
-                .putString ("Direccion", dir)
-                .putString ("NTelefono",tele)
-                .putString ("Email",email)
-                .putString ("Club",club).build ();
+                .putString ("nombre", nombre)
+                .putString ("apellido",apellido)
+                .putString ("usuario", usuario)
+                .putString ("contrasena",contra)
+                .putString ("direccion", dir)
+                .putString ("ntelefono",tele)
+                .putString ("email",email)
+                .putString ("club",club).build ();
         OneTimeWorkRequest oneTimeWorkRequest = new OneTimeWorkRequest.Builder(BD.class).setInputData(param).build();
         WorkManager.getInstance(Registro.this).enqueue(oneTimeWorkRequest);
         WorkManager.getInstance(Registro.this).getWorkInfoByIdLiveData(oneTimeWorkRequest.getId())
@@ -293,7 +270,7 @@ public class Registro extends AppCompatActivity {
                     public void onChanged(WorkInfo workInfo) {
                         if (workInfo != null && workInfo.getState().isFinished()) {
                             if (workInfo.getState() != WorkInfo.State.SUCCEEDED) {
-                                Toast.makeText (getApplicationContext (),"Jaimitada",Toast.LENGTH_LONG).show ();
+                                Toast.makeText (getApplicationContext (),"Jaimitada x 2",Toast.LENGTH_LONG).show ();
                             }
                         }
                     }

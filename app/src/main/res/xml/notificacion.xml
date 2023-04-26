@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="NotificationStyle">
+        <item name="android:colorAccent">#FF4081</item>
+        <item name="android:icon">@drawable/notificacion</item>
+        <item name="android:priority">high</item>
+    </style>
+
+    <drawable name="ic_notification">@drawable/notificacion</drawable>
+</resources>
