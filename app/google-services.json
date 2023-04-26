@@ -1,0 +1,68 @@
+{
+  "project_info": {
+    "project_number": "177627284008",
+    "project_id": "proyecto-das-defintivo",
+    "storage_bucket": "proyecto-das-defintivo.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:177627284008:android:0cc5e00d5a4abd49456b1d",
+        "android_client_info": {
+          "package_name": "com.example.proyecto_das_defintivo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "177627284008-dbgfa38bi409tn4nhnef25f8ppcpkdau.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBbiyucVPqat5GDwbK_N2x1Tppq7gFreEs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "177627284008-dbgfa38bi409tn4nhnef25f8ppcpkdau.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:177627284008:android:471b7e33a873aca2456b1d",
+        "android_client_info": {
+          "package_name": "com.example.proyectodas2"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "177627284008-dbgfa38bi409tn4nhnef25f8ppcpkdau.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBbiyucVPqat5GDwbK_N2x1Tppq7gFreEs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "177627284008-dbgfa38bi409tn4nhnef25f8ppcpkdau.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
