@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
                     public void onChanged(WorkInfo workInfo) {
                         if (workInfo != null && workInfo.getState().isFinished()) {
                             if (workInfo.getState() != WorkInfo.State.SUCCEEDED) {
-                                Toast.makeText (getApplicationContext (),"Jaimitada x 2",Toast.LENGTH_LONG).show ();
+                                Toast.makeText (getApplicationContext (),"ERROR",Toast.LENGTH_LONG).show ();
                             }else{
                                 Data d = workInfo.getOutputData();
                                 boolean b = d.getBoolean("result",false);

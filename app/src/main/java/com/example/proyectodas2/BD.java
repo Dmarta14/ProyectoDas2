@@ -76,7 +76,7 @@ public class BD extends Worker {
                     out.print(paramJson.toString());
 
                     out.close ();
-                    Log.d("Prueba","Titooos"+paramJson);
+                    Log.d("Prueba","PRUEBA"+paramJson);
 
                     int statusCode = urlConnection.getResponseCode ();
                     Log.d("conexion", "Codigo Respuesta " + statusCode);
@@ -88,14 +88,14 @@ public class BD extends Worker {
                         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
                         String line;
                         StringBuilder result = new StringBuilder();
-                        Log.d("respuesta","Titooos ha entrado2");
+
                         while ((line = bufferedReader.readLine()) != null) {
                             result.append(line);
-                            Log.d("respuesta","Titooos ha entrado3");
+
                         }
-                        Log.d("respuesta","Titooos"+result);
+
                         inputStream.close();
-                        Log.d("respuesta","Titooos ha entrado5");
+
                         boolean exito = result.toString().equals("true");
 
                         Data.Builder b = new Data.Builder();
@@ -129,21 +129,21 @@ public class BD extends Worker {
                     out.print(paramJson.toString());
                     out.close();
                     int statusCode = urlConnection.getResponseCode();
-                    Log.d("Prueba","Titooos"+paramJson);
-                    Log.d("respuesta","Titooos"+statusCode);
+                    Log.d("Prueba","PRUEBA:"+paramJson);
+                    Log.d("respuesta","RESPUESTA:"+statusCode);
                     if (statusCode == 200) {
                         BufferedInputStream inputStream = new BufferedInputStream(urlConnection.getInputStream());
                         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
                         String line;
                         StringBuilder result = new StringBuilder();
-                        Log.d("respuesta","Titooos ha entrado2");
+
                         while ((line = bufferedReader.readLine()) != null) {
                             result.append(line);
-                            Log.d("respuesta","Titooos ha entrado3");
+
                         }
-                        Log.d("respuesta","Titooos: "+result);
+
                         inputStream.close();
-                        Log.d("respuesta","Titooos ha entrado5");
+
                         boolean exito = result.toString().equals("true");
 
                         Data.Builder b = new Data.Builder();

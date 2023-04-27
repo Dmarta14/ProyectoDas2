@@ -88,15 +88,35 @@
                     android:textColor="#FFFFFF"
                     android:textSize="20sp"
                     app:cornerRadius="20dp"
-                    app:iconPadding="2dp" />
+                    app:iconPadding="2dp"
+                    android:layout_marginStart="40dp"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginTop="14dp"/>
 
                 <Button
                     android:id="@+id/galeria"
                     android:layout_width="155dp"
                     android:layout_height="50dp"
                     android:backgroundTint="#D200BCD4"
-                    android:onClick="registrarUsuario"
+
                     android:text="Galeria"
+                    android:textColor="#FFFFFF"
+                    android:textSize="20sp"
+                    app:cornerRadius="20dp"
+                    app:iconPadding="2dp"
+                    android:layout_marginStart="230dp"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginTop="-50dp"/>
+
+                <Button
+                    android:id="@+id/volver"
+                    android:layout_width="155dp"
+                    android:layout_height="50dp"
+                    android:layout_marginStart="130dp"
+                    android:layout_marginLeft="70dp"
+                    android:layout_marginTop="200dp"
+                    android:backgroundTint="#D200BCD4"
+                    android:text="Volver"
                     android:textColor="#FFFFFF"
                     android:textSize="20sp"
                     app:cornerRadius="20dp"

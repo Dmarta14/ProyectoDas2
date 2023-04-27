@@ -59,10 +59,11 @@ public class Modificar extends AppCompatActivity {
     public static final int CAMERA_REQUEST_CODE = 102;
     public static final int GALLERY_REQUEST_CODE = 105;
     ImageView selectedImage;
-    Button cameraBtn,galleryBtn;
+    Button cameraBtn,galleryBtn,volver;
     String currentPhotoPath;
     StorageReference storageReference;
 
+    String token;
 
 
 
@@ -74,14 +75,22 @@ public class Modificar extends AppCompatActivity {
         selectedImage = findViewById(R.id.imageView);
         cameraBtn = findViewById(R.id.camara);
         galleryBtn = findViewById(R.id.galeria);
-
+        volver = findViewById (R.id.volver);
         storageReference = FirebaseStorage.getInstance().getReference();
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)!=
+                    PackageManager.PERMISSION_GRANTED) {
+                //PEDIR EL PERMISO
+                ActivityCompat.requestPermissions(this, new
+                        String[]{Manifest.permission.POST_NOTIFICATIONS}, 11);
+            }
+        }
         cameraBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 askCameraPermissions();
-            }
+                           }
         });
 
         galleryBtn.setOnClickListener(new View.OnClickListener() {
@@ -89,6 +98,13 @@ public class Modificar extends AppCompatActivity {
             public void onClick(View v) {
                 Intent gallery = new Intent(Intent.ACTION_PICK,MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                 startActivityForResult(gallery, GALLERY_REQUEST_CODE);
+            }
+        });
+        volver.setOnClickListener (new View.OnClickListener () {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(view.getContext(),Menu_Principal.class);
+                startActivity(intent);
             }
         });
 
@@ -165,18 +181,53 @@ public class Modificar extends AppCompatActivity {
                     @Override
                     public void onSuccess(Uri uri) {
                         Log.d("tag", "onSuccess: Uploaded Image URl is " + uri.toString());
+                        FirebaseMessaging.getInstance().getToken()
+                                .addOnCompleteListener(new OnCompleteListener<String>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<String> task) {
+                                        if (!task.isSuccessful()) {
+                                            Log.w("fcm", "Fetching FCM registration token failed", task.getException());
+                                            return;
+                                        }
+
+                                        // Conseguir el token
+                                        token = task.getResult();
+
+                                        // Log and toast
+                                        Log.d("fcm", "El token del dispositivo: " + token);
+                                        // Despues de obtener el token se manda un POST a un PHP con el token para que el PHP se lo mande a Firebase y finalmente se mande una notificacion al dispositivo
+                                        // para agradecer al usuario que haya fotografiado el logo de la universidad
+
+                                        // Se realiza la identificacion
+                                        Data data = new Data.Builder()
+                                                .putString("token", token).build();
+                                        OneTimeWorkRequest otwr = new OneTimeWorkRequest.Builder(Notificacion.class)
+                                                .setInputData(data).build();
+                                        WorkManager.getInstance(Modificar.this).enqueue(otwr);
+                                        WorkManager.getInstance(Modificar.this).getWorkInfoByIdLiveData(otwr.getId()).observe(Modificar.this, new Observer<WorkInfo>() {
+                                            @Override
+                                            public void onChanged(@Nullable WorkInfo workInfo) {
+                                                if (workInfo != null && workInfo.getState().isFinished()) {
+                                                    String resultado = workInfo.getOutputData().getString("result");
+                                                    // Si el php devuelve que se ha identificado CORRECTAMENTE
+                                                    Log.d("fcm", "Firebase.php devuelve "+resultado);
+
+                                                }
+                                            }
+                                        });
+                                    }
+                                });
                     }
                 });
-
-                Toast.makeText(Modificar.this, "Image Is Uploaded.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(Modificar.this, "Firebase upload SUCCEED", Toast.LENGTH_SHORT).show();
             }
+            // El onFailureListener se activa cuando falla
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
-                Toast.makeText(Modificar.this, "Upload Failled.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(Modificar.this, "Firebase upload failed", Toast.LENGTH_SHORT).show();
             }
         });
-
     }
 
 
@@ -209,11 +260,10 @@ public class Modificar extends AppCompatActivity {
     private void dispatchTakePictureIntent() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         // Ensure that there's a camera activity to handle the intent
-        Log.d("Titos","entraaqui?");
 
             // Create the File where the photo should go
         File photoFile = null;
-        Log.d("Titos","entraaqui2?");
+
         try {
 
             photoFile = createImageFile();
@@ -222,7 +272,7 @@ public class Modificar extends AppCompatActivity {
         }
             // Continue only if the File was successfully created
         if (photoFile != null) {
-            Log.d("Titos","entra?");
+
             Uri photoURI = FileProvider.getUriForFile(this,
                         "com.example.android.proyectodas2.fileprovider",
                         photoFile);
@@ -231,63 +281,4 @@ public class Modificar extends AppCompatActivity {
         }
 
     }
-    
-
-
-   
-    public void mandarToken() {
-
-        FirebaseMessaging.getInstance().getToken()
-                .addOnCompleteListener(new OnCompleteListener<String> () {
-                    @Override
-                    public void onComplete(@NonNull Task<String> task) {
-                        if (!task.isSuccessful()) {
-                            Log.w("Prueba_FCM", "Fetching FCM registration token failed", task.getException());
-                            return;
-                        }
-
-                        // Get new FCM registration token
-                        String token = task.getResult ();
-                        // Log and toast
-                        Log.d("Prueba_FCM", "El token aqui es --> " + token);
-                        Data data = new Data.Builder().putString("token", token).build();
-                        OneTimeWorkRequest otwr = new OneTimeWorkRequest.Builder(ServicioFirebase.class).setInputData(data).build();
-                        WorkManager.getInstance(Modificar.this).enqueue(otwr);
-                        WorkManager.getInstance(Modificar.this).getWorkInfoByIdLiveData(otwr.getId()).observe(Modificar.this, new Observer<WorkInfo>() {
-                            public void onChanged(@Nullable WorkInfo workInfo) {
-                                if (workInfo != null && workInfo.getState().isFinished()) {
-                                    String resultado = workInfo.getOutputData().getString("result");
-                                    // Si el php devuelve que se ha identificado CORRECTAMENTE
-                                    Log.d("Prueba_FCM", "Resultado --> " + resultado);
-                                }
-                            }
-                        });
-                    }
-                });
-    }
-    private void preguntarPermisosNotificacion() {
-        // This is only necessary for API level >= 33 (TIRAMISU)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) ==
-                    PackageManager.PERMISSION_GRANTED) {
-                // FCM SDK (and your app) can post notifications.
-            } else if (shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS)) {
-                // TODO: display an educational UI explaining to the user the features that will be enabled
-                //       by them granting the POST_NOTIFICATION permission. This UI should provide the user
-                //       "OK" and "No thanks" buttons. If the user selects "OK," directly request the permission.
-                //       If the user selects "No thanks," allow the user to continue without notifications.
-            } else {
-                // Directly ask for the permission
-                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
-            }
-        }
-    }
-    private final ActivityResultLauncher<String> requestPermissionLauncher =
-            registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
-                if (isGranted) {
-                    // FCM SDK (and your app) can post notifications.
-                } else {
-                    // TODO: Inform user that that your app will not show notifications.
-                }
-            });
 }

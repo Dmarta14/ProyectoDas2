@@ -1,7 +1,12 @@
 package com.example.proyectodas2;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -38,6 +43,33 @@ public class Menu_Principal extends AppCompatActivity {
         recyclerView.setHasFixedSize (true);
         recyclerView.setLayoutManager (new LinearLayoutManager (this));
         recyclerView.setAdapter (listAdapter);
+    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.desplegable, menu);
+        return true;
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.item1:
+                Intent intent=new Intent(getApplicationContext(),Modificar.class);
+                startActivity(intent); //solicitamos que habra el menu
+                finish(); //cerrando la activity
+                return true;
+            case R.id.item3:
+                SharedPreferences sharedPref = this.getSharedPreferences("correo_electronico", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPref.edit();
+                editor.clear();
+                editor.apply();
+                Intent intentt = new Intent(this, MainActivity.class);
+                startActivity(intentt);
+                finish();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
     public void moveToDescription(ListaElementos lista){
         Intent intent = new Intent (this, Ejercicios.class);

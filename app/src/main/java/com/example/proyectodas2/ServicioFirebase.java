@@ -1,81 +1,52 @@
 package com.example.proyectodas2;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Context;
+import android.os.Build;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
-import androidx.work.Data;
-import androidx.work.ListenableWorker;
-import androidx.work.Worker;
-import androidx.work.WorkerParameters;
+import androidx.core.app.NotificationCompat;
 
-import org.json.JSONObject;
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.messaging.FirebaseMessagingService;
+import com.google.firebase.messaging.RemoteMessage;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.HttpURLConnection;
-import java.net.URL;
-
-public class ServicioFirebase extends Worker {
-
-    public ServicioFirebase(@NonNull Context context, @NonNull WorkerParameters workerParams) {
-        super(context, workerParams);
+public class ServicioFirebase extends FirebaseMessagingService {
+    public ServicioFirebase() {
     }
 
-    @NonNull
     @Override
-    public ListenableWorker.Result doWork() {
+    public void onNewToken(@NonNull String token) {
+        Log.d("fcm", "Refreshed token: " + token);
+        FirebaseMessaging.getInstance().subscribeToTopic("ALERTS");
+    }
 
-        // Recojo el token
-        String token = getInputData().getString("token");
+    //Cuando se recibe el mensaje se compueba si es una Notificacion, si se trata de una notificacion se recogen los datos y creamos la
+    //notificacion que se verá en el móvil.
+    public void onMessageReceived (RemoteMessage remoteMessage){
 
-        String dir = "http://ec2-54-93-62-124.eu-central-1.compute.amazonaws.com/dmarta002/WEB/Firebase.php";
-        HttpURLConnection urlConnection = null;
-
-        String usuario = getInputData ().getString ("usuario");
-        String pass = getInputData ().getString ("contrasena");
-
-
-        try {
-            URL dest = new URL(dir);
-            urlConnection = (HttpURLConnection) dest.openConnection();
-            urlConnection.setConnectTimeout(5000);
-            urlConnection.setReadTimeout(5000);
-            urlConnection.setRequestMethod("POST");
-            urlConnection.setRequestProperty("Content-Type", "application/json");
-            JSONObject paramJson = new JSONObject();
-            paramJson.put("token", token);
-
-
-            PrintWriter out = new PrintWriter(urlConnection.getOutputStream());
-            out.print(paramJson.toString());
-            out.close();
-            int statusCode = urlConnection.getResponseCode();
-            Log.d("Prueba","Titooos"+paramJson);
-            Log.d("respuesta","Titooos"+statusCode);
-            if (statusCode == 200) {
-                BufferedInputStream inputStream = new BufferedInputStream(urlConnection.getInputStream());
-                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
-                String line;
-                StringBuilder result = new StringBuilder();
-                Log.d("respuesta","Titooos ha entrado2");
-                while ((line = bufferedReader.readLine()) != null) {
-                    result.append(line);
-                    Log.d("respuesta","Titooos ha entrado3");
-                }
-                Log.d("respuesta","Titooos: "+result);
-                inputStream.close();
-                Log.d("respuesta","Titooos ha entrado5");
-                boolean exito = result.toString().equals("true");
-
-                Data.Builder b = new Data.Builder();
-                return Result.success(b.putBoolean("result", exito).build());
-            }
-        } catch (Exception e) {
-            Log.e ("EXCEPTION", "doWork: ", e);
+        if (remoteMessage.getData().size() > 0){
+            Log.d("Prueba_Mensaje", "El mensaje en el if es --> " + remoteMessage.getData());
         }
-        return ListenableWorker.Result.failure();
+        if (remoteMessage.getNotification() != null){
+            Log.d("Prueba_Mensaje", "El mensaje es --> " + remoteMessage.getNotification().getBody());
+
+            NotificationManager elManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            NotificationCompat.Builder elBuilder = new NotificationCompat.Builder(ServicioFirebase.this, "id_canal");
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+                NotificationChannel elCanal = new NotificationChannel("id_canal", "Mensajeria_FCM", NotificationManager.IMPORTANCE_DEFAULT);
+                elManager.createNotificationChannel(elCanal);
+                elBuilder.setSmallIcon(android.R.drawable.stat_sys_warning)
+                        .setContentTitle(remoteMessage.getNotification().getTitle()) //Titulo del mensaje FCM
+                        .setContentText(remoteMessage.getNotification().getBody()) //Cuerpo del mensaje FCM
+                        .setVibrate(new long[] {0, 1000, 500, 1000})
+                        .setAutoCancel(false);
+                elManager.notify(1, elBuilder.build());
+            }
+
+
+        }
     }
 }
